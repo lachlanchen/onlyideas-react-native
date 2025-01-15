@@ -1,0 +1,1413 @@
+===== .//app/index.js =====
+import { Link } from 'expo-router';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
+import UserCard from '../src/components/UserCard';
+import { useAuthenticator } from '@aws-amplify/ui-react-native';
+import { useEffect, useState } from 'react';
+import { DataStore } from 'aws-amplify';
+import { User } from '../src/models';
+
+export default function Page() {
+  const [users, setUsers] = useState([]);
+
+  const { signOut } = useAuthenticator();
+
+  useEffect(() => {
+    // fetch users
+    DataStore.query(User).then(setUsers);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+          <Link href={'/newPost'} style={styles.text} >New post</Link>
+          <Text onPress={() => signOut()} style={ styles.text }>Sign out</Text>
+      <FlatList
+        data={users}
+        renderItem={({ item }) => <UserCard user={item} />}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    paddingTop: 75,
+  },
+  text: {
+    fontSize: 18,
+    marginVertical: 5,
+    marginTop: -10,
+    marginBottom: 20,
+    color: "black", 
+  },
+});
+
+
+
+===== .//app/user/[id].js =====
+import { useSearchParams } from 'expo-router';
+import { Text, StyleSheet, FlatList, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import UserProfileHeader from '../../src/components/UserProfileHeader';
+import Post from '../../src/components/Post';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { DataStore } from 'aws-amplify';
+import { User, Post as PostModel } from '../../src/models';
+
+const ProfilePage = () => {
+  const [user, setUser] = useState();
+  const [posts, setPosts] = useState([]);
+  const [isSubscribed, setIsSubscribed] = useState(true);
+
+  const { id } = useSearchParams();
+
+  useEffect(() => {
+    DataStore.query(User, id).then(setUser);
+    DataStore.query(PostModel, (post) => post.userID.eq(id)).then(setPosts);
+  }, [id]);
+
+  // const user = users.find((u) => u.id === id);
+
+  if (!user) {
+    return <Text>User not found!</Text>;
+  }
+
+  console.log(posts);
+
+  if (!isSubscribed) {
+    return (
+      <View>
+        <UserProfileHeader
+          user={user}
+          isSubscribed={isSubscribed}
+          setIsSubscribed={setIsSubscribed}
+        />
+
+        <View
+          style={{
+            backgroundColor: 'gainsboro',
+            alignItems: 'center',
+            padding: 20,
+          }}
+        >
+          <FontAwesome5 name="lock" size={50} color="gray" />
+          <Text
+            style={{
+              backgroundColor: 'royalblue',
+              height: 50,
+              borderRadius: 25,
+              overflow: 'hidden',
+              padding: 15,
+              color: 'white',
+              margin: 20,
+            }}
+          >
+            Subscribe to see user's posts
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={posts}
+      renderItem={({ item }) => <Post post={item} />}
+      ListHeaderComponent={() => (
+        <UserProfileHeader
+          user={user}
+          isSubscribed={isSubscribed}
+          setIsSubscribed={setIsSubscribed}
+        />
+      )}
+    />
+  );
+};
+
+const styles = StyleSheet.create({});
+export default ProfilePage;
+
+
+===== .//app/newPost.js =====
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TextInput,
+  Button,
+  Image,
+} from 'react-native';
+import { useState } from 'react';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { DataStore, Storage } from 'aws-amplify';
+import { Post } from '../src/models';
+import { useAuthenticator } from '@aws-amplify/ui-react-native';
+import * as Crypto from 'expo-crypto';
+
+const NewPost = () => {
+  const [text, setText] = useState('');
+  const [image, setImage] = useState('');
+
+  const { user } = useAuthenticator();
+
+  const router = useRouter();
+
+  const onPost = async () => {
+    console.warn('Post: ', text);
+    const imageKey = await uploadImage();
+
+    await DataStore.save(
+      new Post({ text, likes: 0, userID: user.attributes.sub, image: imageKey })
+    );
+
+    setText('');
+    setImage('');
+  };
+
+  async function uploadImage() {
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const fileKey = `${Crypto.randomUUID()}.png`;
+      await Storage.put(fileKey, blob, {
+        contentType: 'image/jpeg', // contentType is optional
+      });
+      return fileKey;
+    } catch (err) {
+      console.log('Error uploading file:', err);
+    }
+  }
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  return (
+    <SafeAreaView style={{ marginTop: 40 }}>
+      <View
+        style={{ flexDirection: 'row',
+         alignItems: 'center',
+          marginBottom: 30,
+        }}
+      >
+        <Ionicons
+          onPress={() => router.back()}
+          name="arrow-back"
+          size={28}
+          color="black"
+          style={{ marginRight: 20, marginHorizontal: 10, }}
+        />
+        <Text style={{ fontWeight: '500', fontSize: 20 }}>New post</Text>
+      </View>
+
+      <TextInput
+        placeholder="Compose new post..."
+        marginHorizontal={10}
+        value={text}
+        onChangeText={setText}
+        multiline
+        numberOfLines={3}
+      />
+
+      <View style={{ marginVertical: 15, marginHorizontal: 10, }}>
+        <Feather onPress={pickImage} name="image" size={24} color="gray" />
+      </View>
+
+      {image && <Image src={image} style={{ width: '100%', aspectRatio: 1 }} />}
+      
+      <Button title="Post" onPress={onPost}  />
+     
+    </SafeAreaView>
+  );
+};
+
+
+export default NewPost;
+
+
+===== .//app/_layout.js =====
+import { Stack } from 'expo-router';
+import { API, Amplify, DataStore, Hub } from 'aws-amplify';
+import awsconfig from '../src/aws-exports';
+import { Authenticator } from '@aws-amplify/ui-react-native';
+import { useEffect } from 'react';
+import { User } from "../src/models";
+
+Amplify.configure(awsconfig);
+
+const CreateUserMutation = `
+mutation createUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    id
+    name
+    handle
+    bio
+    subscriptionPrice
+  }
+}
+`;
+
+export default function RootLayout() {
+  useEffect(() => {
+    const removeListener = Hub.listen('auth', async (data) => {
+      if (data.payload.event === 'signIn') {
+        const userInfo = data.payload.data.attributes;
+        console.log(JSON.stringify(userInfo, null, 2));
+
+        // DataStore.save(new User({ id: userInfo.sub, name: userInfo.name }));
+
+        // save user to database
+        const newUser = {
+          id: userInfo.sub,
+          name: userInfo.name,
+          handle: userInfo.nickname,
+          subscriptionPrice: 0,
+        };
+        await API.graphql({
+          query: CreateUserMutation,
+          variables: { input: newUser },
+        });
+      }
+    });
+
+    return () => {
+      // cleanup function
+      removeListener();
+    };
+  }, []);
+
+  return (
+    <Authenticator.Provider>
+      <Authenticator>
+        <Stack screenOptions={{ headerShown: false }} />
+      </Authenticator>
+    </Authenticator.Provider>
+  );
+}
+
+===== .//index.js =====
+import 'core-js/full/symbol/async-iterator';
+import 'expo-router/entry';
+
+===== .//README.md =====
+# OnlyFans clone Full Stack App
+
+### OnlyFans clone app is a full stack app, front end and back end for mobile,replicates the features and functionality to the same.
+
+### Built With
+
+```
+Expo
+React
+React Native
+Expo crypto
+Expo image picker
+Expo linking
+Aws amplify/ ui-react-native
+Amazon cognito identity-js
+Aws-amplify
+Javascript
+StyleSheet
+React Native gesture handler
+React native reanimated
+```
+
+### Clone repo 🔧
+
+```
+https://github.com/GonzaloVolonterio/react-native-onlyfans-clone-app
+
+```
+### Install🔧
+
+```
+npm install
+
+npx expo start or npm start
+
+```
+
+Examples App
+
+### You need create a free account to use the app
+
+![Screenshot_20230424-200925](https://user-images.githubusercontent.com/64506662/234364566-863bc1e1-e289-4b9b-9658-a11e737bebd8.png)
+![Screenshot_20230424-200957](https://user-images.githubusercontent.com/64506662/234364579-8e32708f-cb69-4c1c-82e3-eefd7cb5f161.png)
+![Screenshot_20230424-201003](https://user-images.githubusercontent.com/64506662/234364622-e9cc5d14-77f2-415f-9027-1d3ffe3e7c17.png)
+![Screenshot_20230424-201006](https://user-images.githubusercontent.com/64506662/234364653-73de6b92-b7a6-4ef7-a3a6-c26411bfd46a.png)
+![Screenshot_20230424-201031](https://user-images.githubusercontent.com/64506662/234364754-f5ce7da1-1ad1-4e90-bf85-40add436ad23.png)
+
+
+===== .//babel.config.js =====
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ["babel-preset-expo"],
+    plugins: [
+      "@babel/plugin-proposal-export-namespace-from",
+      "react-native-reanimated/plugin",
+      require.resolve("expo-router/babel"),
+    ],
+  };
+};
+
+
+===== .//src/aws-exports.js =====
+/* eslint-disable */
+// WARNING: DO NOT EDIT. This file is automatically generated by AWS Amplify. It will be overwritten.
+
+const awsmobile = {
+    "aws_project_region": "us-east-1",
+    "aws_appsync_graphqlEndpoint": "https://rsj2btu6prh2lkbnq6z2lhh3mi.appsync-api.us-east-1.amazonaws.com/graphql",
+    "aws_appsync_region": "us-east-1",
+    "aws_appsync_authenticationType": "API_KEY",
+    "aws_appsync_apiKey": "da2-krm7u72oufc7rlr3fltyiitq5q",
+    "aws_cognito_identity_pool_id": "us-east-1:8ae83d87-1100-4433-b796-ff452d7ad54e",
+    "aws_cognito_region": "us-east-1",
+    "aws_user_pools_id": "us-east-1_6xZYw9hPL",
+    "aws_user_pools_web_client_id": "49cuunu22kju668carjtbrbopi",
+    "oauth": {},
+    "aws_cognito_username_attributes": [
+        "EMAIL"
+    ],
+    "aws_cognito_social_providers": [],
+    "aws_cognito_signup_attributes": [
+        "NAME",
+        "NICKNAME"
+    ],
+    "aws_cognito_mfa_configuration": "OFF",
+    "aws_cognito_mfa_types": [
+        "SMS"
+    ],
+    "aws_cognito_password_protection_settings": {
+        "passwordPolicyMinLength": 6,
+        "passwordPolicyCharacters": []
+    },
+    "aws_cognito_verification_mechanisms": [
+        "EMAIL"
+    ],
+    "aws_user_files_s3_bucket": "onlyfansclone-app-storage-b3e1fac43002f-dev",
+    "aws_user_files_s3_bucket_region": "us-east-1"
+};
+
+
+export default awsmobile;
+
+
+===== .//src/models/index.js =====
+// @ts-check
+import { initSchema } from '@aws-amplify/datastore';
+import { schema } from './schema';
+
+
+
+const { Post, User } = initSchema(schema);
+
+export {
+  Post,
+  User
+};
+
+===== .//src/models/schema.js =====
+export const schema = {
+    "models": {
+        "Post": {
+            "name": "Post",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "text": {
+                    "name": "text",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "image": {
+                    "name": "image",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "likes": {
+                    "name": "likes",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "userID": {
+                    "name": "userID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "Posts",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byUser",
+                        "fields": [
+                            "userID"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "User": {
+            "name": "User",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "handle": {
+                    "name": "handle",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "bio": {
+                    "name": "bio",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "avatar": {
+                    "name": "avatar",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "coverImage": {
+                    "name": "coverImage",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "subscriptionPrice": {
+                    "name": "subscriptionPrice",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "Posts": {
+                    "name": "Posts",
+                    "isArray": true,
+                    "type": {
+                        "model": "Post"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "userID"
+                        ]
+                    }
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "AWSDateTime",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isReadOnly": true
+                }
+            },
+            "syncable": true,
+            "pluralName": "Users",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "public",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    "enums": {},
+    "nonModels": {},
+    "codegenVersion": "3.4.4",
+    "version": "fd31c278fd5b020c227d6129ed90b1f9"
+};
+
+===== .//src/components/Post.js =====
+import { View, Text, Image } from 'react-native';
+import { Entypo, AntDesign, FontAwesome5 } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import { DataStore, Storage } from 'aws-amplify';
+import { User } from '../models';
+
+const Post = ({ post }) => {
+  const [user, setUser] = useState();
+  const [imageUri, setImageUri] = useState();
+
+  useEffect(() => {
+    DataStore.query(User, post.userID).then(setUser);
+  }, []);
+
+  useEffect(() => {
+    if (post.image) {
+      Storage.get(post.image).then(setImageUri);
+    }
+  }, [post.image]);
+
+  return (
+    <View style={{ marginVertical: 15 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 5 }}>
+        <Image
+          src={user?.avatar}
+          style={{
+            width: 50,
+            aspectRatio: 1,
+            borderRadius: 50,
+            marginRight: 10,
+          }}
+        />
+        <View>
+          <Text style={{ fontWeight: '600', fontSize: 16, marginBottom: 3 }}>
+            {user?.name}
+          </Text>
+          <Text style={{ color: 'gray' }}>@{user?.handle}</Text>
+        </View>
+
+        <View
+          style={{
+            marginLeft: 'auto',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ marginRight: 5, color: 'gray' }}>3 hours ago</Text>
+          <Entypo name="dots-three-horizontal" size={18} color="gray" />
+        </View>
+      </View>
+
+      <Text style={{ margin: 10, lineHeight: 18 }}>{post.text}</Text>
+
+      {imageUri && (
+        <Image src={imageUri} style={{ width: '100%', aspectRatio: 1 }} />
+      )}
+
+      <View style={{ margin: 10, flexDirection: 'row' }}>
+        <AntDesign
+          name="hearto"
+          size={22}
+          color="gray"
+          style={{ marginRight: 15 }}
+        />
+
+        <FontAwesome5
+          name="dollar-sign"
+          size={20}
+          color="gray"
+          style={{ marginRight: 15 }}
+        />
+      </View>
+
+      <Text style={{ fontWeight: '500', marginHorizontal: 10 }}>
+        {post.likes} Likes
+      </Text>
+    </View>
+  );
+};
+
+export default Post;
+
+
+===== .//src/components/UserCard.js =====
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+  Pressable,
+} from 'react-native';
+import { Link } from 'expo-router';
+
+export default function UserCard({ user }) {
+  return (
+    <Link href={`/user/${user.id}`} asChild>
+      <Pressable>
+        <ImageBackground
+          source={{ uri: user.coverImage }}
+          style={styles.userCard}
+        >
+          <View style={styles.overlay} />
+          {/* Image */}
+          <Image src={user.avatar} style={styles.userImage} />
+
+          {/* Name & handle */}
+          <View>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 22,
+                fontWeight: '500',
+                marginBottom: 5,
+              }}
+            >
+              {user.name}
+            </Text>
+            <Text style={{ color: 'white' }}>@{user.handle}</Text>
+          </View>
+        </ImageBackground>
+      </Pressable>
+    </Link>
+  );
+}
+
+const styles = StyleSheet.create({
+  userCard: {
+    backgroundColor: 'gray',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginVertical: 5,
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    ...StyleSheet.absoluteFillObject,
+  },
+  userImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    borderColor: 'white',
+    borderWidth: 3,
+    marginRight: 20,
+  },
+});
+
+
+===== .//src/components/UserProfileHeader.js =====
+import { useRouter } from 'expo-router';
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  SafeAreaView,
+  Image,
+  Pressable,
+} from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+
+const UserProfileHeader = ({ user, isSubscribed, setIsSubscribed }) => {
+  const router = useRouter();
+
+  return (
+    <View>
+      <ImageBackground source={{ uri: user.coverImage }} style={styles.cover}>
+        <View style={styles.overlay} />
+
+        <SafeAreaView
+          style={{
+            marginTop: 40,
+            marginBottom: 30,
+            marginHorizontal: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <Ionicons
+            onPress={() => router.back()}
+            name="arrow-back"
+            size={28}
+            color="white"
+            style={{ marginRight: 20 }}
+          />
+
+          <View>
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 20,
+                fontWeight: '500',
+                marginBottom: 5,
+              }}
+            >
+              {user.name}
+            </Text>
+            <Text style={{ color: 'white' }}>
+              1.4K Posts · 64.3K Likes · 15.3K Fans
+            </Text>
+          </View>
+        </SafeAreaView>
+      </ImageBackground>
+
+      <View style={{ padding: 10 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            marginTop: -50,
+          }}
+        >
+          <Image src={user.avatar} style={styles.userImage} />
+          <FontAwesome name="share-square-o" size={24} color="royalblue" />
+        </View>
+
+        <Text style={{ fontSize: 20, fontWeight: '600', marginVertical: 5 }}>
+          {user.name}
+        </Text>
+        <Text style={{ color: 'gray', marginBottom: 10 }}>@{user.handle}</Text>
+        <Text style={{ lineHeight: 20 }} numberOfLines={5}>
+          {user.bio}
+        </Text>
+
+        <Text style={{ color: 'gray', marginTop: 20, fontWeight: 'bold' }}>
+          SUBSCRIPTION
+        </Text>
+
+        <Pressable
+          onPress={() => setIsSubscribed(!isSubscribed)}
+          style={[
+            styles.button,
+            { backgroundColor: isSubscribed ? 'white' : 'royalblue' },
+          ]}
+        >
+          <Text
+            style={[
+              styles.buttonText,
+              { color: isSubscribed ? 'royalblue' : 'white' },
+            ]}
+          >
+            {isSubscribed ? 'SUBSCRIBED' : 'SUBSCRIBE'}
+          </Text>
+          <Text
+            style={[
+              styles.buttonText,
+              { color: isSubscribed ? 'royalblue' : 'white' },
+            ]}
+          >
+            {user.subscriptionPrice === 0
+              ? 'FOR FREE'
+              : `$${user.subscriptionPrice.toFixed(2)} / month`}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  cover: {
+    height: 200,
+    width: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  userImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    borderColor: 'white',
+    borderWidth: 3,
+    marginRight: 20,
+  },
+  button: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'gainsboro',
+    padding: 15,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: 'royalblue',
+    fontWeight: '600',
+  },
+});
+export default UserProfileHeader;
+
+
+===== .//src/graphql/subscriptions.js =====
+/* eslint-disable */
+// this is an auto generated file. This will be overwritten
+
+export const onCreatePost = /* GraphQL */ `
+  subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
+    onCreatePost(filter: $filter) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const onUpdatePost = /* GraphQL */ `
+  subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
+    onUpdatePost(filter: $filter) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const onDeletePost = /* GraphQL */ `
+  subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
+    onDeletePost(filter: $filter) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const onCreateUser = /* GraphQL */ `
+  subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
+    onCreateUser(filter: $filter) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateUser = /* GraphQL */ `
+  subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
+    onUpdateUser(filter: $filter) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteUser = /* GraphQL */ `
+  subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
+    onDeleteUser(filter: $filter) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+
+
+===== .//src/graphql/mutations.js =====
+/* eslint-disable */
+// this is an auto generated file. This will be overwritten
+
+export const createPost = /* GraphQL */ `
+  mutation CreatePost(
+    $input: CreatePostInput!
+    $condition: ModelPostConditionInput
+  ) {
+    createPost(input: $input, condition: $condition) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const updatePost = /* GraphQL */ `
+  mutation UpdatePost(
+    $input: UpdatePostInput!
+    $condition: ModelPostConditionInput
+  ) {
+    updatePost(input: $input, condition: $condition) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const deletePost = /* GraphQL */ `
+  mutation DeletePost(
+    $input: DeletePostInput!
+    $condition: ModelPostConditionInput
+  ) {
+    deletePost(input: $input, condition: $condition) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const createUser = /* GraphQL */ `
+  mutation CreateUser(
+    $input: CreateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    createUser(input: $input, condition: $condition) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const updateUser = /* GraphQL */ `
+  mutation UpdateUser(
+    $input: UpdateUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    updateUser(input: $input, condition: $condition) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const deleteUser = /* GraphQL */ `
+  mutation DeleteUser(
+    $input: DeleteUserInput!
+    $condition: ModelUserConditionInput
+  ) {
+    deleteUser(input: $input, condition: $condition) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+
+
+===== .//src/graphql/queries.js =====
+/* eslint-disable */
+// this is an auto generated file. This will be overwritten
+
+export const getPost = /* GraphQL */ `
+  query GetPost($id: ID!) {
+    getPost(id: $id) {
+      id
+      text
+      image
+      likes
+      userID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const listPosts = /* GraphQL */ `
+  query ListPosts(
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        text
+        image
+        likes
+        userID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncPosts = /* GraphQL */ `
+  query SyncPosts(
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncPosts(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        text
+        image
+        likes
+        userID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const getUser = /* GraphQL */ `
+  query GetUser($id: ID!) {
+    getUser(id: $id) {
+      id
+      name
+      handle
+      bio
+      avatar
+      coverImage
+      subscriptionPrice
+      Posts {
+        nextToken
+        startedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+  }
+`;
+export const listUsers = /* GraphQL */ `
+  query ListUsers(
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        handle
+        bio
+        avatar
+        coverImage
+        subscriptionPrice
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const syncUsers = /* GraphQL */ `
+  query SyncUsers(
+    $filter: ModelUserFilterInput
+    $limit: Int
+    $nextToken: String
+    $lastSync: AWSTimestamp
+  ) {
+    syncUsers(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      lastSync: $lastSync
+    ) {
+      items {
+        id
+        name
+        handle
+        bio
+        avatar
+        coverImage
+        subscriptionPrice
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+export const postsByUserID = /* GraphQL */ `
+  query PostsByUserID(
+    $userID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    postsByUserID(
+      userID: $userID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        text
+        image
+        likes
+        userID
+        createdAt
+        updatedAt
+        _version
+        _deleted
+        _lastChangedAt
+        __typename
+      }
+      nextToken
+      startedAt
+      __typename
+    }
+  }
+`;
+
+

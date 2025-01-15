@@ -16,5 +16,29 @@
         "OnlyFansCloneApp": {}
       }
     }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-onlyfanscloneapp-dev-3002f-authRole",
+      "UnauthRoleArn": "arn:aws:iam::746669229958:role/amplify-onlyfanscloneapp-dev-3002f-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::746669229958:role/amplify-onlyfanscloneapp-dev-3002f-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-onlyfanscloneapp-dev-3002f-deployment",
+      "UnauthRoleName": "amplify-onlyfanscloneapp-dev-3002f-unauthRole",
+      "StackName": "amplify-onlyfanscloneapp-dev-3002f",
+      "StackId": "arn:aws:cloudformation:us-east-1:746669229958:stack/amplify-onlyfanscloneapp-dev-3002f/e4d4fc80-d32c-11ef-b778-0affc7938aed",
+      "AmplifyAppId": "d18bm25ccxcbqc"
+    },
+    "categories": {
+      "auth": {
+        "OnlyFansCloneApp": {}
+      },
+      "api": {
+        "OnlyFansCloneApp": {}
+      },
+      "storage": {
+        "s3onlyfanscloneappstorageb3e1fac4": {}
+      }
+    }
   }
 }
