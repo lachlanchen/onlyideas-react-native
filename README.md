@@ -107,3 +107,6 @@ For additional details on the original codebase and features, check the **README
 - **Deployment**: Use [EAS Build](https://docs.expo.dev/eas/) or similar to generate standalone apps for iOS & Android.
 
 Enjoy building **OnlyIdeas**, and feel free to tailor the platform to protect and profit from user ideas with AI assistance!
+=======
+# onlyideas
+OnlyIdeas.Art
