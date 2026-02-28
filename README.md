@@ -1,6 +1,9 @@
 [English](README.md) · [العربية](i18n/README.ar.md) · [Español](i18n/README.es.md) · [Français](i18n/README.fr.md) · [日本語](i18n/README.ja.md) · [한국어](i18n/README.ko.md) · [Tiếng Việt](i18n/README.vi.md) · [中文 (简体)](i18n/README.zh-Hans.md) · [中文（繁體）](i18n/README.zh-Hant.md) · [Deutsch](i18n/README.de.md) · [Русский](i18n/README.ru.md)
 
 
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
+
+
 # OnlyIdeas Full Stack App
 
 ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-2ea44f)
@@ -11,6 +14,8 @@
 ![Storage](https://img.shields.io/badge/Storage-S3-569A31)
 ![Auth](https://img.shields.io/badge/Auth-Cognito-DD344C)
 ![License](https://img.shields.io/badge/License-Not%20Specified-lightgrey)
+![GitHub contributors](https://img.shields.io/github/contributors/lachlanchen/onlyideas-react-native?style=flat-square)
+![Open issues](https://img.shields.io/github/issues/lachlanchen/onlyideas-react-native?style=flat-square)
 
 **OnlyIdeas** is a full-stack application that helps people share and monetize their ideas. It integrates with **AWS Amplify** for user authentication, data storage (AppSync & DynamoDB), and file hosting (S3). You can run this project on **iOS**, **Android**, and **Web** via **Expo**.
 
@@ -93,17 +98,16 @@ Current user flow:
 
 ### 1. Clone the Repo
 
-Preserving existing canonical command:
+Use whichever remote your workflow prefers:
+
+| Command | Notes |
+|---|---|
+| `git clone git@github.com:lachlanchen/onlyideas.git` | Historical/archival reference |
+| `git clone git@github.com:lachlanchen/onlyideas-react-native.git` | Current repository (recommended) |
+
+Then open the correct project directory:
 
 ```bash
-git clone git@github.com:lachlanchen/onlyideas.git
-cd onlyideas
-```
-
-Repository-accurate remote currently configured in this repo:
-
-```bash
-git clone git@github.com:lachlanchen/onlyideas-react-native.git
 cd onlyideas-react-native
 ```
 
@@ -301,6 +305,12 @@ Contributions are welcome. Until a dedicated `CONTRIBUTING.md` is added, please 
 4. Open a pull request with clear setup/reproduction notes.
 
 If you are changing Amplify resources, include the corresponding `amplify/` updates and migration notes in the PR description.
+
+## ❤️ Support
+
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
 
 ## License 📄
 

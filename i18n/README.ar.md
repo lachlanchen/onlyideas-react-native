@@ -1,7 +1,9 @@
 [English](../README.md) · [العربية](README.ar.md) · [Español](README.es.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Tiếng Việt](README.vi.md) · [中文 (简体)](README.zh-Hans.md) · [中文（繁體）](README.zh-Hant.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
 
-# تطبيق OnlyIdeas المتكامل (Full Stack)
+[![LazyingArt banner](https://github.com/lachlanchen/lachlanchen/raw/main/figs/banner.png)](https://github.com/lachlanchen/lachlanchen/blob/main/figs/banner.png)
+
+# تطبيق OnlyIdeas الكامل
 
 ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-2ea44f)
 ![Expo](https://img.shields.io/badge/Expo-48-000020?logo=expo)
@@ -11,12 +13,14 @@
 ![Storage](https://img.shields.io/badge/Storage-S3-569A31)
 ![Auth](https://img.shields.io/badge/Auth-Cognito-DD344C)
 ![License](https://img.shields.io/badge/License-Not%20Specified-lightgrey)
+![GitHub contributors](https://img.shields.io/github/contributors/lachlanchen/onlyideas-react-native?style=flat-square)
+![Open issues](https://img.shields.io/github/issues/lachlanchen/onlyideas-react-native?style=flat-square)
 
-**OnlyIdeas** هو تطبيق متكامل (Full Stack) يساعد الأشخاص على مشاركة أفكارهم وتحقيق الدخل منها. يتكامل مع **AWS Amplify** لمصادقة المستخدمين، وتخزين البيانات (AppSync و DynamoDB)، واستضافة الملفات (S3). يمكنك تشغيل هذا المشروع على **iOS** و **Android** و **Web** عبر **Expo**.
+**OnlyIdeas** هو تطبيق full-stack يساعد المستخدمين على مشاركة أفكارهم وتحويلها إلى مصدر دخل. يدمج **AWS Amplify** للمصادقة، وتخزين البيانات (**AppSync** و **DynamoDB**)، واستضافة الملفات (**S3**). يمكنك تشغيل المشروع على **iOS** و **Android** و **Web** عبر **Expo**.
 
-استلهامًا من ميزات على نمط “OnlyFans-style”، يهدف OnlyIdeas أيضًا إلى دمج أدوات الذكاء الاصطناعي لتوليد أفكار المستخدمين أو الموسيقى أو الوسائط التي يساهمون بها، وتحليلها وترجمتها.
+استلهم المشروع من خصائص بنمط **OnlyFans**، وهدفه أيضًا إدماج أدوات الذكاء الاصطناعي لتوليد وتحليل وترجمة أفكار المستخدمين والموسيقى أو المحتوى الإعلامي.
 
-هذا README هو مسودة موسعة ودقيقة بالنسبة للمستودع، مبنية على محتوى README الحالي وملفات المصدر الحالية.
+هذا الملف هو نسخة موسعة ودقيقة للمستودع مبنية على محتوى README الحالي وملفات المصدر الفعلية.
 
 ## نظرة عامة 📌
 
@@ -24,7 +28,7 @@
 
 | المجال | التقنية |
 |---|---|
-| إطار التطبيق | `React Native` + `Expo` |
+| إطار العمل | `React Native` + `Expo` |
 | التنقل | `expo-router` |
 | المصادقة + البيانات + التخزين | `aws-amplify` + `@aws-amplify/ui-react-native` |
 | API | `AWS AppSync (GraphQL)` |
@@ -34,27 +38,27 @@
 
 يستخدم OnlyIdeas:
 
-- `expo-router` للتنقل والشاشات المعتمدة على المسارات.
-- `aws-amplify` + `@aws-amplify/ui-react-native` للمصادقة، وواجهة API، وDataStore، والتخزين.
-- فئات Amplify الخلفية لكل من **Auth (Cognito)** و **API (AppSync GraphQL)** و **Storage (S3)**.
+- `expo-router` للتنقل بين الشاشات المبنية على المسارات.
+- `aws-amplify` + `@aws-amplify/ui-react-native` للمصادقة وواجهة API و`DataStore` والتخزين.
+- فئات Amplify الخاصة بـ **Auth (Cognito)** و **API (AppSync GraphQL)** و **Storage (S3)**.
 
 تدفق المستخدم الحالي:
 
-1. تسجيل الدخول عبر Amplify Authenticator.
-2. تعرض الصفحة الرئيسية قائمة المبدعين (سجلات `User`).
-3. فتح ملف منشئ ومشاهدة المنشورات وحالة حائط الدفع.
-4. إنشاء منشور جديد مع رفع صورة اختياري إلى S3.
+1. تسجيل الدخول عبر `Amplify Authenticator`.
+2. تعرض الصفحة الرئيسية خريطة للمستخدمين (مبدعين).
+3. فتح ملف المبدع لعرض المنشورات وحالة الحاجز المدفوع.
+4. إنشاء منشور جديد مع خيار رفع صورة إلى S3.
 
-## الميزات ✨
+## المميزات ✨
 
-- صفحات عرض المبدعين والملفات الشخصية.
-- تسجيل الدخول / تسجيل الخروج باستخدام Amplify UI Authenticator.
-- إنشاء منشور جديد مع تكامل منتقي الصور.
-- رفع الصور إلى S3 واسترجاعها.
-- حفظ نماذج `User` و `Post` المدعومة بـ GraphQL.
-- التشغيل على iOS وAndroid وWeb من مشروع Expo واحد.
+- صفحات قوائم المبدعين والملفات الشخصية.
+- تسجيل الدخول/الخروج عبر `Amplify UI Authenticator`.
+- إنشاء منشور جديد مع دعم اختيار الصورة.
+- رفع الصور واسترجاعها من S3.
+- تخزين نماذجي `User` و `Post` عبر GraphQL.
+- تشغيل iOS وAndroid وWeb من مشروع Expo واحد.
 
-## بنية المشروع 🗂️
+## هيكلة المشروع 🗂️
 
 ```text
 .
@@ -79,63 +83,62 @@
 └── package.json
 ```
 
-## المتطلبات المسبقة ✅
+## المتطلبات المبدئية ✅
 
-- يُنصح باستخدام Node.js 18+.
-- npm (ملف القفل هو `package-lock.json`).
+- يُفضَّل استخدام Node.js 18+.
+- npm (ملف التثبيت المقفل هو `package-lock.json`).
 - أدوات متوافقة مع Expo:
-  - iOS Simulator + Xcode (لمحاكاة iOS محليًا).
-  - Android Studio + SDK/emulator (لمحاكاة Android محليًا).
-- وصول إلى حساب AWS لتجهيز موارد Amplify.
-- Amplify CLI لإعداد الخلفية.
+  - iOS Simulator + Xcode (للتشغيل المحلي على iOS).
+  - Android Studio + SDK/emulator (للتشغيل المحلي على Android).
+- حساب AWS لإعداد Amplify.
+- `Amplify CLI` لإعداد الخلفية.
 
 ## التثبيت 🚀
 
 ### 1. استنساخ المستودع
 
-مع الحفاظ على الأمر الأساسي الحالي كما هو:
+استخدم أي remote يناسب سير عملك:
+
+| Command | Notes |
+|---|---|
+| `git clone git@github.com:lachlanchen/onlyideas.git` | مرجع تاريخي/أرشيفي |
+| `git clone git@github.com:lachlanchen/onlyideas-react-native.git` | المستودع الحالي (موصى به) |
+
+ثم افتح مجلد المشروع الصحيح:
 
 ```bash
-git clone git@github.com:lachlanchen/onlyideas.git
-cd onlyideas
-```
-
-المستودع الفعلي المضبوط حاليًا لهذا المشروع:
-
-```bash
-git clone git@github.com:lachlanchen/onlyideas-react-native.git
 cd onlyideas-react-native
 ```
 
-تم تخصيص هذا المستودع تحديدًا لمنصة **OnlyIdeas** مع التركيز على الإبداع وتحقيق الدخل.
+هذا المستودع مخصّص خصيصًا لمنصة **OnlyIdeas** مع تركيز على الإبداع وتحقيق العائد.
 
-### 2. تثبيت الاعتماديات
+### 2. تثبيت الاعتمادات
 
-من جذر المشروع، شغّل:
+من جذر المشروع:
 
 ```bash
 npm install
 ```
 
-سيؤدي هذا إلى تثبيت وحدات Node المطلوبة، بما في ذلك **Expo** و **React Native** و **aws-amplify**.
+سيتم تثبيت الوحدات الأساسية المطلوبة، بما فيها **Expo** و **React Native** و **aws-amplify**.
 
-## إعداد وتهيئة AWS Amplify ☁️
+## تهيئة وبدء AWS Amplify ☁️
 
-1. **تثبيت Amplify CLI** (إذا لم تثبّته مسبقًا):
+1. **تثبيت Amplify CLI** (إن لم تكن مثبتًا بعد):
 
    ```bash
    npm install -g @aws-amplify/cli
    ```
 
-2. **إعداد Amplify** باستخدام بيانات اعتماد AWS الخاصة بك:
+2. **إعداد Amplify** بمفاتيح AWS الخاصة بك:
 
    ```bash
    amplify configure
    ```
 
-   - سجّل الدخول إلى AWS console، وأنشئ مستخدم IAM أو استخدم مستخدمًا موجودًا.
-   - قدّم `accessKeyId` و `secretAccessKey`.
-   - سمِّ الملف الشخصي الجديد (مثلًا: `onlyideas`).
+   - سجّل دخولك إلى AWS console وأنشئ أو استخدم مستخدم IAM موجود.
+   - وفّر `accessKeyId` و `secretAccessKey`.
+   - سمِّ البروفايل الجديد (مثلًا: `onlyideas`).
 
 3. **تهيئة Amplify** داخل هذا المشروع:
 
@@ -143,24 +146,24 @@ npm install
    amplify init
    ```
 
-   خيارات موصى بها أثناء الأسئلة:
+   الإعدادات المقترحة:
 
-   - اسم البيئة: `dev` (أو ما تختاره)
-   - المحرر الافتراضي: حسب اختيارك
+   - اسم البيئة: `dev` (أو اختيارك).
+   - المحرر الافتراضي: حسب تفضيلك.
    - طريقة المصادقة: `AWS profile`
-   - الملف الشخصي: اختر الذي أعددته للتو
+   - البروفايل: اختر البروفايل الذي أعددته.
 
-4. **دفع موارد Amplify الخلفية**:
+4. **رفع backend الخاص بـ Amplify**:
 
    ```bash
    amplify push
    ```
 
-هذا يجهّز البنية الخلفية على AWS (Cognito وAppSync وS3 وغيرها) لـ OnlyIdeas.
+هذا ينشئ البنية الخلفية على AWS (Cognito وAppSync وS3 وغيرها) لمشروع OnlyIdeas.
 
 ## تشغيل التطبيق ▶️
 
-استخدم **Expo** لتشغيل التطبيق على منصات مختلفة:
+استخدم **Expo** لفتح التطبيق على منصات مختلفة:
 
 ```bash
 npx expo start
@@ -170,51 +173,51 @@ npx expo start
 
 | Script | Command | Purpose |
 |---|---|---|
-| `npm start` | `expo start` | Start Expo dev server |
-| `npm run ios` | `expo start --ios` | Launch iOS simulator |
-| `npm run android` | `expo start --android` | Launch Android emulator |
-| `npm run web` | `expo start --web` | Run web target |
+| `npm start` | `expo start` | بدء سيرفر تطوير Expo |
+| `npm run ios` | `expo start --ios` | تشغيل مقلد iOS |
+| `npm run android` | `expo start --android` | تشغيل محاكي Android |
+| `npm run web` | `expo start --web` | تشغيل هدف الويب |
 
 - اضغط `i` لفتح iOS Simulator (يتطلب macOS + Xcode).
 - اضغط `a` لفتح Android emulator (يتطلب Android Studio وSDK).
-- اضغط `w` لفتح نسخة الويب في المتصفح.
+- اضغط `w` لعرض الويب في المتصفح.
 
-### التشغيل على الويب
+### تشغيل على الويب
 
-لأن هذا المشروع يستخدم بعض المكتبات الخاصة بـ **React Native** (مثل `@aws-amplify/ui-react-native`)، قد تحتاج إلى التعامل الشرطي مع هذه الاستيرادات إذا ظهر خطأ أثناء bundling للويب. في كثير من الحالات سيعمل **web** مباشرة. إذا واجهت مشاكل، يمكنك:
+بما أن المشروع يستخدم بعض مكتبات **React Native** المتخصصة (مثل `@aws-amplify/ui-react-native`)، قد تحتاج إلى استيرادها بشكل شرطي إذا ظهرت أخطاء أثناء تجميع الويب. في كثير من الحالات يعمل الويب مباشرة، وإن ظهرت مشاكل:
 
-- إزالة الاستيرادات الأصلية البحتة أو استبدالها، أو
-- تجاوز نسخة الويب ومتابعة التطوير على المنصات الأصلية.
+- أزل أو استبدل الاستيرادات الصافية للمنصات الأصلية، أو
+- تجاهل تشغيل نسخة الويب وركّز على iOS/Android.
 
-## ملاحظات الإعداد ⚙️
+## ملاحظات التهيئة ⚙️
 
-### ملف مولّد مطلوب: `src/aws-exports.js`
+### الملف المولّد المطلوب: `src/aws-exports.js`
 
-يقوم `app/_layout.js` باستيراد `../src/aws-exports`، لكن هذا الملف يتم توليده بواسطة Amplify وغير محفوظ في هذا المستودع. تشغيل `amplify init` + `amplify push` يجب أن يولّده.
+`app/_layout.js` يستورد `../src/aws-exports`، لكن هذا الملف يولّده Amplify وليس موجودًا في المستودع. تشغيل `amplify init` + `amplify push` يفترض أن يُنشئه.
 
-### شكل البنية الخلفية في Amplify
+### شكل backend في Amplify
 
-استنادًا إلى `amplify/backend/backend-config.json`، يتضمن هذا المشروع:
+حسب `amplify/backend/backend-config.json`، يتضمن هذا المشروع:
 
 - `auth/OnlyFansCloneApp` (Cognito)
 - `api/OnlyFansCloneApp` (AppSync GraphQL)
 - `storage/s3onlyfanscloneappstorageb3e1fac4` (S3)
 
-تفصيل إضافي دقيق حول المصادقة:
+تفصيل مصادقة إضافي:
 
-- وضع المصادقة الافتراضي في AppSync هو حاليًا `API_KEY` مع AWS IAM كمزوّد إضافي.
+- وضع مصادقة AppSync الافتراضي هو حاليًا `API_KEY` مع AWS IAM كمزوّد إضافي.
 
 ### نموذج بيانات GraphQL
 
-مُعرّف في `amplify/backend/api/OnlyFansCloneApp/schema.graphql`:
+معرّف في `amplify/backend/api/OnlyFansCloneApp/schema.graphql`:
 
 - نموذج `User` مع حقول الملف الشخصي (`name`, `handle`, `bio`, `avatar`, `coverImage`, `subscriptionPrice`)
-- نموذج `Post` مع `text`، و`image` اختياري، و`likes`، وفهرس `userID` (`byUser`)
+- نموذج `Post` مع `text`, `image` اختياري, `likes`, وفهرس `userID` (`byUser`)
 
 ### إعداد Expo/Babel
 
-- `index.js` يقوم بتحميل async iterator polyfill و`expo-router/entry`.
-- `babel.config.js` يتضمن:
+- `index.js` يحمل polyfill لمؤشر المكرّر غير المتزامن و `expo-router/entry`.
+- ملف `babel.config.js` يحتوي على:
   - `@babel/plugin-proposal-export-namespace-from`
   - `react-native-reanimated/plugin`
   - `expo-router/babel`
@@ -225,11 +228,11 @@ npx expo start
 
 1. افتح التطبيق وسجّل الدخول.
 2. اضغط `New post` في الشاشة الرئيسية.
-3. أدخل نص المنشور.
-4. اختياريًا، اختر صورة من المكتبة.
+3. اكتب نص المنشور.
+4. اختياريًا اختر صورة من المكتبة.
 5. اضغط `Post` لرفع الصورة وحفظ سجل `Post`.
 
-### سير عمل الخلفية المحلية (شائع)
+### سير عمل backend محلي (نموذجي)
 
 ```bash
 amplify status
@@ -237,77 +240,83 @@ amplify pull
 amplify push
 ```
 
-إذا عدّلت schema/models، أعد توليد الملفات الناتجة حسب الحاجة باستخدام أوامر Amplify CLI في بيئتك.
+إذا عدّلت schema/models، أعد توليد المخرجات اللازمة بأوامر Amplify CLI المناسبة في بيئتك.
 
 ## ملاحظات التطوير 🛠️
 
-- التوجيه معتمد على الملفات عبر `expo-router` داخل `app/`.
-- التطبيق الحالي يمزج بين `DataStore` واستخدام مباشر لطفرات `API.graphql`.
-- عند حدث `signIn`، يستمع `_layout.js` عبر `Hub` ويحاول إنشاء سجل `User` مطابق.
-- لا توجد حاليًا سكربتات `test` أو `lint` مخصصة في `package.json`.
-- مجلد `i18n/` موجود؛ وملفات README اللغوية مخططة لكنها غير مضافة بعد في هذه المسودة.
-- روابط اللغات محفوظة عمدًا كسطر خيارات واحد أعلى هذا README.
+- يعتمد التوجيه على الملفات عبر `expo-router` داخل `app/`.
+- التطبيق الحالي يجمع بين `DataStore` واستخدام طفرات `API.graphql` مباشرة.
+- عند حدث `signIn`، يراقب `_layout.js` عبر `Hub` ويحاول إنشاء سجل `User` مطابق.
+- لا توجد حالياً سكربتات `test` أو `lint` مخصصة في `package.json`.
+- مجلد `i18n/` موجود؛ ملفات README بلغات أخرى مخططة ضمن هذه الدفعة.
+- روابط اللغات موجودة كسطر خيارات واحد في أعلى هذا الملف.
 
 ## استكشاف الأخطاء وإصلاحها 🧯
 
 ### `Cannot find module '../src/aws-exports'`
 
-شغّل:
+نفّذ:
 
 ```bash
 amplify init
 amplify push
 ```
 
-تأكد من توليد `src/aws-exports.js` محليًا.
+تأكد من وجود `src/aws-exports.js` مولّدًا محليًا.
 
-### نجاح المصادقة لكن خلاصة المستخدمين فارغة
+### نجح تسجيل الدخول لكن التغذية فارغة
 
-- تأكد من تنفيذ مستمع `Hub` لحدث تسجيل الدخول ونجاح طفرة إنشاء المستخدم.
-- تحقق من وضع المصادقة والصلاحيات في AppSync.
-- راجع البيانات في DynamoDB/AppSync console لسجلات `User`.
+- تأكد من تشغيل مستمع `Hub` عند تسجيل الدخول وأن طفرة إنشاء المستخدم نجحت.
+- راجع وضع مصادقة AppSync والأذونات.
+- تحقق من وجود بيانات `User` في واجهات DynamoDB/AppSync.
 
-### فشل رفع الصور عند إنشاء منشور جديد
+### فشل رفع الصورة عند إنشاء منشور جديد
 
-- تأكد من وجود مورد تخزين S3 في Amplify backend.
-- تحقق أن المستخدم الموثق لديه صلاحية الرفع.
-- تحقق من اتصال الشبكة وأعد المحاولة بعد إعادة المصادقة.
+- تأكد من وجود مورد تخزين S3 في backend الخاص بـ Amplify.
+- تحقق من وجود صلاحية رفع للمستخدم الموثّق.
+- تحقق من الشبكة ثم أعد المحاولة بعد إعادة المصادقة.
 
 ### أخطاء بناء الويب بسبب استيرادات أصلية فقط
 
-استخدم استيرادًا شرطيًا للوحدات الأصلية فقط، أو ركّز على iOS/Android أثناء التطوير إذا تعطلت توافقية الويب.
+استخدم استيرادًا شرطيًا للوحدات الأصلية فقط، أو ركّز على iOS/Android إذا تعذرت مطابقة الويب.
 
-## خارطة الطريق / الخطوات القادمة 🧭
+## خارطة الطريق / الخطوات التالية 🧭
 
-- **دمج الذكاء الاصطناعي**: إضافة endpoints أو استدعاءات API خارجية (مثل OpenAI) لدعم توليد المحتوى تلقائيًا، أو تحليل أكوردات الموسيقى، أو الترجمة.
-- **تحقيق الدخل**: إدراج ميزات الاشتراك أو الدفع (مثل Stripe) إذا أردت محاكاة ميزات مدفوعة.
-- **النشر**: استخدم [EAS Build](https://docs.expo.dev/eas/) أو ما يشابهه لإنتاج تطبيقات مستقلة لنظامي iOS وAndroid.
-- توسيع مجموعة README متعددة اللغات تحت `i18n/` باستخدام روابط اللغات أعلى هذا الملف.
+- **دمج الذكاء الاصطناعي**: إضافة نقاط نهاية أو استدعاءات API طرف ثالث (مثل OpenAI) لدعم التوليد الآلي، تحليل الألحان، أو الترجمة.
+- **الربحية**: إضافة نظام اشتراك أو دفع (مثل Stripe) إذا كنت تريد خصائص مماثلة للمنتجات المدفوعة.
+- **النشر**: استخدام [EAS Build](https://docs.expo.dev/eas/) أو أدوات مشابهة لإنشاء تطبيقات مستقلة لـ iOS وAndroid.
+- توسيع ملفات README متعددة اللغات داخل `i18n/` باستخدام روابط اللغات أعلى هذه الصفحة.
 
-## شكر وتقدير 🙌
+## الشكر والتقدير 🙌
 
 - المشروع الأصلي من [GonzaloVolonterio](https://github.com/GonzaloVolonterio/react-native-onlyfans-clone-app).
-- تم تكييفه وإعادة تسميته إلى **OnlyIdeas** مع التركيز على مساعدة الناس في مشاركة أفكارهم وتحقيق الربح منها، مع ميزات ذكاء اصطناعي مخطط لها للموسيقى وترجمة اللغات والتعاون البحثي.
+- تمت إعادة التوجيه وإعادة تسمية المشروع إلى **OnlyIdeas** مع تركيز واضح على مشاركة الناس لأفكارهم وتحقيق الدخل منها، مع ميزات ذكاء اصطناعي مخططة للموسيقى وترجمة اللغة والتعاون البحثي.
 
-لمزيد من التفاصيل حول قاعدة الشيفرة الأصلية وميزاتها، راجع README في المستودع الأصلي.
+لمزيد من التفاصيل حول قاعدة الكود الأصلية وميزاتها، راجع README في المستودع الأصلي.
 
 ## المساهمة 🤝
 
-المساهمات مرحّب بها. إلى أن تتم إضافة ملف `CONTRIBUTING.md` مخصص، يرجى اتباع هذا التدفق الخفيف:
+المساهمات مرحّب بها. إلى أن يتم إضافة ملف `CONTRIBUTING.md` مخصص، اتبع التسلسل الخفيف التالي:
 
-1. اعمل Fork للمستودع.
-2. أنشئ فرعًا لميزة جديدة.
-3. أبقِ التعديلات مركزة واختبر على منصة مستهدفة واحدة على الأقل.
-4. افتح Pull Request مع ملاحظات إعداد/إعادة إنتاج واضحة.
+1. Fork للمستودع.
+2. إنشاء فرع للميزة.
+3. إبقاء التعديلات مركزة واختبارها على منصة مستهدفة واحدة على الأقل.
+4. فتح طلب سحب (Pull Request) مع ملاحظات إعداد/إعادة إنتاج واضحة.
 
-إذا كنت تغيّر موارد Amplify، أدرج تحديثات `amplify/` المقابلة وملاحظات الترحيل في وصف الـ PR.
+إذا كنت تغيّر موارد Amplify، أدرج تغييرات `amplify/` المقابلة وملاحظات الترحيل داخل وصف PR.
 
-## الترخيص 📄
+## ❤️ Support
+
+| Donate | PayPal | Stripe |
+| --- | --- | --- |
+| [![Donate](https://camo.githubusercontent.com/24a4914f0b42c6f435f9e101621f1e52535b02c225764b2f6cc99416926004b7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f6e6174652d4c617a79696e674172742d3045413545393f7374796c653d666f722d7468652d6261646765266c6f676f3d6b6f2d6669266c6f676f436f6c6f723d7768697465)](https://chat.lazying.art/donate) | [![PayPal](https://camo.githubusercontent.com/d0f57e8b016517a4b06961b24d0ca87d62fdba16e18bbdb6aba28e978dc0ea21/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f50617950616c2d526f6e677a686f754368656e2d3030343537433f7374796c653d666f722d7468652d6261646765266c6f676f3d70617970616c266c6f676f436f6c6f723d7768697465)](https://paypal.me/RongzhouChen) | [![Stripe](https://camo.githubusercontent.com/1152dfe04b6943afe3a8d2953676749603fb9f95e24088c92c97a01a897b4942/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374726970652d446f6e6174652d3633354246463f7374796c653d666f722d7468652d6261646765266c6f676f3d737472697065266c6f676f436f6c6f723d7768697465)](https://buy.stripe.com/aFadR8gIaflgfQV6T4fw400) |
+
+## License 📄
 
 لا يوجد ملف `LICENSE` حاليًا في هذا المستودع.
 
-افتراض: جميع الحقوق محفوظة افتراضيًا ما لم/إلى أن يضيف المشرفون ترخيصًا صريحًا.
+الافتراض: جميع الحقوق محفوظة افتراضًا ما لم يتم إضافة ترخيص صريح من قبل المسؤولين.
 
 ---
 
-استمتع ببناء **OnlyIdeas**، ويمكنك تخصيص المنصة لحماية أفكار المستخدمين وتحقيق الربح منها بمساعدة الذكاء الاصطناعي.
+استمتع ببناء **OnlyIdeas**، ويمكنك تخصيص المنصة بحرية لحماية الأفكار وتحقيق الربح منها بمساعدة الذكاء الاصطناعي.
